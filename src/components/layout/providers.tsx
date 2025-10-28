@@ -1,9 +1,13 @@
 'use client';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import NiceModal from '@ebay/nice-modal-react';
 import { useTheme } from 'next-themes';
 import React from 'react';
 import { ActiveThemeProvider } from '../active-theme';
+
+const queryClient = new QueryClient();
 
 export default function Providers({
   activeThemeValue,
@@ -17,15 +21,19 @@ export default function Providers({
 
   return (
     <>
-      <ActiveThemeProvider initialTheme={activeThemeValue}>
-        <ClerkProvider
-          appearance={{
-            baseTheme: resolvedTheme === 'dark' ? dark : undefined
-          }}
-        >
-          {children}
-        </ClerkProvider>
-      </ActiveThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <NiceModal.Provider>
+          <ActiveThemeProvider initialTheme={activeThemeValue}>
+            <ClerkProvider
+              appearance={{
+                baseTheme: resolvedTheme === 'dark' ? dark : undefined
+              }}
+            >
+              {children}
+            </ClerkProvider>
+          </ActiveThemeProvider>
+        </NiceModal.Provider>
+      </QueryClientProvider>
     </>
   );
 }

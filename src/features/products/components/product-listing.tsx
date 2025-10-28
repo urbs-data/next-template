@@ -3,6 +3,7 @@ import { fakeProducts } from '@/constants/mock-api';
 import { searchParamsCache } from '@/lib/searchparams';
 import { ProductTable } from './product-tables';
 import { columns } from './product-tables/columns';
+import { testAction } from '../actions/test';
 
 type ProductListingPage = {};
 
@@ -23,6 +24,8 @@ export default async function ProductListingPage({}: ProductListingPage) {
   const data = await fakeProducts.getProducts(filters);
   const totalProducts = data.total_products;
   const products: Product[] = data.products;
+
+  await testAction({ name: 'John Doe' });
 
   return (
     <ProductTable

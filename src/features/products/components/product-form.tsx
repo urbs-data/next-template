@@ -8,40 +8,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { Product } from '@/constants/mock-api';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { resolveActionResult } from '@/lib/actions/client';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-
-const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp'
-];
-
-const formSchema = z.object({
-  image: z
-    .any()
-    .refine((files) => files?.length == 1, 'Image is required.')
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      `Max file size is 5MB.`
-    )
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      '.jpg, .jpeg, .png and .webp files are accepted.'
-    ),
-  name: z.string().min(2, {
-    message: 'Product name must be at least 2 characters.'
-  }),
-  category: z.string(),
-  price: z.number(),
-  description: z.string().min(10, {
-    message: 'Description must be at least 10 characters.'
-  })
-});
+import { SubmitHandler } from 'react-hook-form';
+import { addProduct } from '../actions/add-product';
+import { useMutation } from '@tanstack/react-query';
+import {
+  addProductSchema,
+  AddProductSchema
+} from '../actions/add-product-schema';
+import { toast } from 'sonner';
+import { useZodForm } from '@/hooks/use-zod-form';
 
 export default function ProductForm({
   initialData,
@@ -50,25 +27,41 @@ export default function ProductForm({
   initialData: Product | null;
   pageTitle: string;
 }) {
-  const defaultValues = {
-    name: initialData?.name || '',
-    category: initialData?.category || '',
-    price: initialData?.price || undefined,
-    description: initialData?.description || ''
-  };
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: defaultValues
+  const form = useZodForm({
+    schema: addProductSchema,
+    mode: 'all',
+    defaultValues: {
+      image: undefined,
+      name: initialData?.name || '',
+      category: initialData?.category || '',
+      price: initialData?.price || 0,
+      description: initialData?.description || ''
+    }
   });
+  const canSubmit = !form.formState.isSubmitting && form.formState.isValid;
 
   const router = useRouter();
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Form submission logic would be implemented here
-    console.log(values);
-    router.push('/dashboard/product');
-  }
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (data: AddProductSchema) => {
+      return resolveActionResult(addProduct(data));
+    },
+    onSuccess: (data) => {
+      const count = Array.isArray(data) ? data.length : 1;
+      toast.success(`${count} product(s) added successfully`);
+      router.push('/dashboard/product');
+    },
+    onError: (error) => {
+      toast.error(`No se pudieron agregar los campos: ${error}`);
+    }
+  });
+
+  const onSubmit: SubmitHandler<AddProductSchema> = async (data) => {
+    if (!canSubmit) {
+      return;
+    }
+    mutate(data);
+  };
 
   return (
     <Card className='mx-auto w-full'>
@@ -154,7 +147,9 @@ export default function ProductForm({
             }}
           />
 
-          <Button type='submit'>Add Product</Button>
+          <Button type='submit' disabled={isPending}>
+            {isPending ? 'Adding Product...' : 'Add Product'}
+          </Button>
         </Form>
       </CardContent>
     </Card>
