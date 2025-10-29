@@ -7,25 +7,29 @@ import { FormTextarea } from '@/components/forms/form-textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
-import { Product } from '@/constants/mock-api';
+import { Product } from '../models/product';
 import { resolveActionResult } from '@/lib/actions/client';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler } from 'react-hook-form';
 import { addProduct } from '../actions/add-product';
+import { updateProduct } from '../actions/update-product';
 import { useMutation } from '@tanstack/react-query';
 import {
   addProductSchema,
   AddProductSchema
 } from '../actions/add-product-schema';
+import { UpdateProductSchema } from '../actions/update-product-schema';
 import { toast } from 'sonner';
 import { useZodForm } from '@/hooks/use-zod-form';
 
 export default function ProductForm({
   initialData,
-  pageTitle
+  pageTitle,
+  productId
 }: {
   initialData: Product | null;
   pageTitle: string;
+  productId: string;
 }) {
   const form = useZodForm({
     schema: addProductSchema,
@@ -42,7 +46,9 @@ export default function ProductForm({
 
   const router = useRouter();
 
-  const { mutate, isPending } = useMutation({
+  const isEditMode = productId !== 'new';
+
+  const { mutate: addMutation, isPending: isAdding } = useMutation({
     mutationFn: async (data: AddProductSchema) => {
       return resolveActionResult(addProduct(data));
     },
@@ -56,11 +62,36 @@ export default function ProductForm({
     }
   });
 
+  const { mutate: updateMutation, isPending: isUpdating } = useMutation({
+    mutationFn: async (data: UpdateProductSchema) => {
+      return resolveActionResult(updateProduct(data));
+    },
+    onSuccess: () => {
+      toast.success('Product updated successfully');
+      router.push('/dashboard/product');
+    },
+    onError: (error) => {
+      toast.error(`No se pudo actualizar el producto: ${error}`);
+    }
+  });
+
+  const isPending = isAdding || isUpdating;
+
   const onSubmit: SubmitHandler<AddProductSchema> = async (data) => {
     if (!canSubmit) {
       return;
     }
-    mutate(data);
+
+    if (isEditMode && initialData) {
+      const updateData: UpdateProductSchema = {
+        id: initialData.id,
+        ...data,
+        image: data.image
+      };
+      updateMutation(updateData);
+    } else {
+      addMutation(data);
+    }
   };
 
   return (
@@ -148,7 +179,13 @@ export default function ProductForm({
           />
 
           <Button type='submit' disabled={isPending}>
-            {isPending ? 'Adding Product...' : 'Add Product'}
+            {isPending
+              ? isEditMode
+                ? 'Updating Product...'
+                : 'Adding Product...'
+              : isEditMode
+                ? 'Update Product'
+                : 'Add Product'}
           </Button>
         </Form>
       </CardContent>

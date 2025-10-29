@@ -9,6 +9,8 @@ import {
   IconSparkles
 } from '@tabler/icons-react';
 
+import { useClerk } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -36,6 +38,8 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const { signOut } = useClerk();
+  const router = useRouter();
 
   return (
     <SidebarMenu>
@@ -98,7 +102,9 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => signOut(() => router.push('/auth/sign-in'))}
+            >
               <IconLogout className='mr-2 h-4 w-4' />
               Log out
             </DropdownMenuItem>

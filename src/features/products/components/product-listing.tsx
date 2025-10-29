@@ -1,14 +1,12 @@
-import { Product } from '@/constants/data';
-import { fakeProducts } from '@/constants/mock-api';
 import { searchParamsCache } from '@/lib/searchparams';
 import { ProductTable } from './product-tables';
 import { columns } from './product-tables/columns';
 import { testAction } from '../actions/test';
+import { getProducts } from '../data/get-products';
 
 type ProductListingPage = {};
 
 export default async function ProductListingPage({}: ProductListingPage) {
-  // Showcasing the use of search params cache in nested RSCs
   const page = searchParamsCache.get('page');
   const search = searchParamsCache.get('name');
   const pageLimit = searchParamsCache.get('perPage');
@@ -18,12 +16,12 @@ export default async function ProductListingPage({}: ProductListingPage) {
     page,
     limit: pageLimit,
     ...(search && { search }),
-    ...(categories && { categories: categories })
+    ...(categories && { category: categories })
   };
 
-  const data = await fakeProducts.getProducts(filters);
-  const totalProducts = data.total_products;
-  const products: Product[] = data.products;
+  const data = await getProducts(filters);
+  const totalProducts = data.totalCount;
+  const products = data.products;
 
   await testAction({ name: 'John Doe' });
 

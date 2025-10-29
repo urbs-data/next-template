@@ -8,11 +8,12 @@ const ACCEPTED_IMAGE_TYPES = [
   'image/webp'
 ];
 
-export const addProductSchema = z.object({
+export const updateProductSchema = z.object({
+  id: z.number(),
   image: z
     .any()
+    .refine((files) => !files || files?.length == 1, 'Invalid image.')
     .optional()
-    .refine((files) => !files || files?.length == 1, 'Image is required.')
     .refine(
       (files) => !files || files?.[0]?.size <= MAX_FILE_SIZE,
       `Max file size is 5MB.`
@@ -31,4 +32,4 @@ export const addProductSchema = z.object({
   })
 });
 
-export type AddProductSchema = z.infer<typeof addProductSchema>;
+export type UpdateProductSchema = z.infer<typeof updateProductSchema>;
