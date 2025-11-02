@@ -22,8 +22,8 @@ export function ProductTable<TData, TValue>({
   const pageCount = Math.ceil(totalItems / pageSize);
 
   const { table } = useDataTable({
-    data, // product data
-    columns, // product columns
+    data,
+    columns,
     pageCount: pageCount,
     shallow: false, //Setting to false triggers a network request with the updated querystring.
     debounceMs: 500

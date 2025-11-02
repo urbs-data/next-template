@@ -5,7 +5,7 @@ import { productsTable } from '@/db/schema';
 import { getProductsSchema, GetProductsSchema } from './get-products-schema';
 import { Product } from '../models/product';
 import { ValidationError } from '@/lib/errors';
-import { eq, like, and, or } from 'drizzle-orm';
+import { eq, like, and, or, asc, desc, SQL } from 'drizzle-orm';
 import { getAuthContext } from '@/lib/context';
 
 export async function getProducts(input: GetProductsSchema): Promise<{
@@ -47,10 +47,33 @@ export async function getProducts(input: GetProductsSchema): Promise<{
   // Get filtered products with pagination
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
+  const orderByClause: SQL[] = [];
+  if (parsedInput.sortBy) {
+    const columnMap: Record<string, any> = {
+      id: productsTable.id,
+      name: productsTable.name,
+      description: productsTable.description,
+      price: productsTable.price,
+      category: productsTable.category,
+      created_at: productsTable.created_at,
+      updated_at: productsTable.updated_at,
+      photo_url: productsTable.photo_url
+    };
+
+    const column = columnMap[parsedInput.sortBy];
+    if (column) {
+      const isDesc = parsedInput.sortDirection === 'desc';
+      orderByClause.push(isDesc ? desc(column) : asc(column));
+    }
+  }
+
   const filteredProducts = await db
     .select()
     .from(productsTable)
     .where(and(whereClause, eq(productsTable.user_id, ctx.session.user.id)))
+    .orderBy(
+      ...(orderByClause.length > 0 ? orderByClause : [asc(productsTable.id)])
+    )
     .limit(limit)
     .offset(offset);
 

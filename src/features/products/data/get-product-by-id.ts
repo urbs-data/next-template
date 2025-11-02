@@ -9,6 +9,7 @@ import {
 import { Product } from '../models/product';
 import { ValidationError } from '@/lib/errors';
 import { eq } from 'drizzle-orm';
+import { delay } from '@/constants/mock-api';
 
 export async function getProductById(
   input: GetProductByIdSchema
@@ -19,6 +20,8 @@ export async function getProductById(
   }
 
   const parsedInput = result.data;
+
+  await delay(1000);
 
   const product = await db
     .select()

@@ -30,12 +30,11 @@ import {
 import * as React from 'react';
 
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
-import { getSortingStateParser } from '@/lib/parsers';
-import type { ExtendedColumnSort } from '@/types/data-table';
 
 const PAGE_KEY = 'page';
 const PER_PAGE_KEY = 'perPage';
-const SORT_KEY = 'sort';
+const SORT_BY_KEY = 'sortBy';
+const SORT_DIRECTION_KEY = 'sortDirection';
 const ARRAY_SEPARATOR = ',';
 const DEBOUNCE_MS = 300;
 const THROTTLE_MS = 50;
@@ -51,9 +50,7 @@ interface UseDataTableProps<TData>
       | 'manualSorting'
     >,
     Required<Pick<TableOptions<TData>, 'pageCount'>> {
-  initialState?: Omit<Partial<TableState>, 'sorting'> & {
-    sorting?: ExtendedColumnSort<TData>[];
-  };
+  initialState?: Partial<TableState>;
   history?: 'push' | 'replace';
   debounceMs?: number;
   throttleMs?: number;
@@ -141,29 +138,44 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     [pagination, setPage, setPerPage]
   );
 
-  const columnIds = React.useMemo(() => {
-    return new Set(
-      columns.map((column) => column.id).filter(Boolean) as string[]
-    );
-  }, [columns]);
-
-  const [sorting, setSorting] = useQueryState(
-    SORT_KEY,
-    getSortingStateParser<TData>(columnIds)
-      .withOptions(queryStateOptions)
-      .withDefault(initialState?.sorting ?? [])
+  const [sortBy, setSortBy] = useQueryState(
+    SORT_BY_KEY,
+    parseAsString.withOptions(queryStateOptions)
   );
+  const [sortDirection, setSortDirection] = useQueryState(
+    SORT_DIRECTION_KEY,
+    parseAsString.withOptions(queryStateOptions)
+  );
+
+  const sorting: SortingState = React.useMemo(() => {
+    if (sortBy) {
+      return [
+        {
+          id: sortBy,
+          desc: sortDirection === 'desc'
+        }
+      ];
+    }
+    return initialState?.sorting ?? [];
+  }, [sortBy, sortDirection, initialState?.sorting]);
 
   const onSortingChange = React.useCallback(
     (updaterOrValue: Updater<SortingState>) => {
-      if (typeof updaterOrValue === 'function') {
-        const newSorting = updaterOrValue(sorting);
-        setSorting(newSorting as ExtendedColumnSort<TData>[]);
+      const newSorting =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue(sorting)
+          : updaterOrValue;
+
+      if (newSorting.length === 0) {
+        void setSortBy(null);
+        void setSortDirection(null);
       } else {
-        setSorting(updaterOrValue as ExtendedColumnSort<TData>[]);
+        const firstSort = newSorting[0];
+        void setSortBy(firstSort.id);
+        void setSortDirection(firstSort.desc ? 'desc' : 'asc');
       }
     },
-    [sorting, setSorting]
+    [sorting, setSortBy, setSortDirection]
   );
 
   const filterableColumns = React.useMemo(() => {

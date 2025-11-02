@@ -7,48 +7,36 @@ import { FormTextarea } from '@/components/forms/form-textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
-import { Product } from '../models/product';
 import { resolveActionResult } from '@/lib/actions/client';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler } from 'react-hook-form';
 import { addProduct } from '../actions/add-product';
-import { updateProduct } from '../actions/update-product';
 import { useMutation } from '@tanstack/react-query';
 import {
   addProductSchema,
   AddProductSchema
 } from '../actions/add-product-schema';
-import { UpdateProductSchema } from '../actions/update-product-schema';
 import { toast } from 'sonner';
 import { useZodForm } from '@/hooks/use-zod-form';
+import { CATEGORIES } from '../data/constants';
 
-export default function ProductForm({
-  initialData,
-  pageTitle,
-  productId
-}: {
-  initialData: Product | null;
-  pageTitle: string;
-  productId: string;
-}) {
+export default function ProductNewForm() {
   const form = useZodForm({
     schema: addProductSchema,
     mode: 'all',
     defaultValues: {
       image: undefined,
-      name: initialData?.name || '',
-      category: initialData?.category || '',
-      price: initialData?.price || 0,
-      description: initialData?.description || ''
+      name: '',
+      category: '',
+      price: 0,
+      description: ''
     }
   });
   const canSubmit = !form.formState.isSubmitting && form.formState.isValid;
 
   const router = useRouter();
 
-  const isEditMode = productId !== 'new';
-
-  const { mutate: addMutation, isPending: isAdding } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async (data: AddProductSchema) => {
       return resolveActionResult(addProduct(data));
     },
@@ -62,43 +50,19 @@ export default function ProductForm({
     }
   });
 
-  const { mutate: updateMutation, isPending: isUpdating } = useMutation({
-    mutationFn: async (data: UpdateProductSchema) => {
-      return resolveActionResult(updateProduct(data));
-    },
-    onSuccess: () => {
-      toast.success('Product updated successfully');
-      router.push('/dashboard/product');
-    },
-    onError: (error) => {
-      toast.error(`No se pudo actualizar el producto: ${error}`);
-    }
-  });
-
-  const isPending = isAdding || isUpdating;
-
   const onSubmit: SubmitHandler<AddProductSchema> = async (data) => {
     if (!canSubmit) {
       return;
     }
 
-    if (isEditMode && initialData) {
-      const updateData: UpdateProductSchema = {
-        id: initialData.id,
-        ...data,
-        image: data.image
-      };
-      updateMutation(updateData);
-    } else {
-      addMutation(data);
-    }
+    mutate(data);
   };
 
   return (
     <Card className='mx-auto w-full'>
       <CardHeader>
         <CardTitle className='text-left text-2xl font-bold'>
-          {pageTitle}
+          Create New Product
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -133,24 +97,7 @@ export default function ProductForm({
               label='Category'
               placeholder='Select category'
               required
-              options={[
-                {
-                  label: 'Beauty Products',
-                  value: 'beauty'
-                },
-                {
-                  label: 'Electronics',
-                  value: 'electronics'
-                },
-                {
-                  label: 'Home & Garden',
-                  value: 'home'
-                },
-                {
-                  label: 'Sports & Outdoors',
-                  value: 'sports'
-                }
-              ]}
+              options={CATEGORIES}
             />
 
             <FormInput
@@ -179,13 +126,7 @@ export default function ProductForm({
           />
 
           <Button type='submit' disabled={isPending}>
-            {isPending
-              ? isEditMode
-                ? 'Updating Product...'
-                : 'Adding Product...'
-              : isEditMode
-                ? 'Update Product'
-                : 'Add Product'}
+            {isPending ? 'Adding Product...' : 'Add Product'}
           </Button>
         </Form>
       </CardContent>
