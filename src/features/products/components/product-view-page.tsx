@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import ProductForm from './product-form';
+import ProductViewForm from './product-view-form';
 import { getProductById } from '../data/get-product-by-id';
 
 type TProductViewPageProps = {
@@ -9,23 +9,12 @@ type TProductViewPageProps = {
 export default async function ProductViewPage({
   productId
 }: TProductViewPageProps) {
-  let product = null;
-  let pageTitle = 'Create New Product';
-
-  if (productId !== 'new') {
-    const fetchedProduct = await getProductById({ id: Number(productId) });
-    if (!fetchedProduct) {
-      notFound();
-    }
-    product = fetchedProduct;
-    pageTitle = `Edit Product`;
+  const fetchedProduct = await getProductById({ id: Number(productId) });
+  if (!fetchedProduct) {
+    notFound();
   }
 
   return (
-    <ProductForm
-      initialData={product}
-      pageTitle={pageTitle}
-      productId={productId}
-    />
+    <ProductViewForm initialData={fetchedProduct} pageTitle='View Product' />
   );
 }

@@ -12,17 +12,36 @@ import { Product } from '@/features/products/models/product';
 import { IconEdit, IconDotsVertical, IconTrash } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { resolveActionResult } from '@/lib/actions/client';
+import { deleteProduct } from '@/features/products/actions/delete-product';
+import { toast } from 'sonner';
 
 interface CellActionProps {
   data: Product;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
-  const [loading] = useState(false);
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const onConfirm = async () => {};
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (id: number) => {
+      return resolveActionResult(deleteProduct({ id }));
+    },
+    onSuccess: (data) => {
+      const count = Array.isArray(data) ? data.length : 1;
+      toast.success(`${count} product(s) deleted successfully`);
+      setOpen(false);
+    },
+    onError: (error) => {
+      toast.error(`No se pudo eliminar el producto: ${error}`);
+    }
+  });
+
+  const onConfirm = async () => {
+    mutate(data.id);
+  };
 
   return (
     <>
@@ -30,7 +49,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onConfirm}
-        loading={loading}
+        loading={isPending}
       />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>

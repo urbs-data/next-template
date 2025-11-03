@@ -6,7 +6,7 @@ import { Column, ColumnDef } from '@tanstack/react-table';
 import { CheckCircle2, Text, XCircle } from 'lucide-react';
 import Image from 'next/image';
 import { CellAction } from './cell-action';
-import { CATEGORY_OPTIONS } from './options';
+import { CATEGORIES } from '@/features/products/data/constants';
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -59,9 +59,9 @@ export const columns: ColumnDef<Product>[] = [
     },
     enableColumnFilter: true,
     meta: {
-      label: 'categories',
+      label: 'Category',
       variant: 'multiSelect',
-      options: CATEGORY_OPTIONS
+      options: CATEGORIES
     }
   },
   {
@@ -76,5 +76,26 @@ export const columns: ColumnDef<Product>[] = [
   {
     id: 'actions',
     cell: ({ row }) => <CellAction data={row.original} />
+  },
+  // columnas de ejemplo para que se vea el scroll horizontal
+  {
+    id: 'price2',
+    accessorKey: 'price',
+    header: 'PRICE2'
+  },
+  {
+    id: 'price3',
+    accessorKey: 'price',
+    header: 'PRICE3'
+  },
+  {
+    id: 'price4',
+    accessorKey: 'price',
+    header: 'PRICE4'
+  },
+  {
+    id: 'price5',
+    accessorKey: 'price',
+    header: 'PRICE5'
   }
 ];

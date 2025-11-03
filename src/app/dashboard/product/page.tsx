@@ -2,9 +2,9 @@ import PageContainer from '@/components/layout/page-container';
 import { buttonVariants } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import ProductListingPage from '@/features/products/components/product-listing';
-import { searchParamsCache, serialize } from '@/lib/searchparams';
+import ProductListPage from '@/features/products/components/product-list-page';
+import ProductListSkeleton from '@/features/products/components/product-list-skeleton';
+import { productSearchParamsCache } from '@/features/products/searchparams';
 import { cn } from '@/lib/utils';
 import { IconPlus } from '@tabler/icons-react';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ type pageProps = {
 export default async function Page(props: pageProps) {
   const searchParams = await props.searchParams;
   // Allow nested RSCs to access the search params (in a type-safe way)
-  searchParamsCache.parse(searchParams);
+  productSearchParamsCache.parse(searchParams);
 
   // This key is used for invoke suspense if any of the search params changed (used for filters).
   // const key = serialize({ ...searchParams });
@@ -43,13 +43,8 @@ export default async function Page(props: pageProps) {
           </Link>
         </div>
         <Separator />
-        <Suspense
-          // key={key}
-          fallback={
-            <DataTableSkeleton columnCount={5} rowCount={8} filterCount={2} />
-          }
-        >
-          <ProductListingPage />
+        <Suspense fallback={<ProductListSkeleton />}>
+          <ProductListPage />
         </Suspense>
       </div>
     </PageContainer>
