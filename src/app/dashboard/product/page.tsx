@@ -6,6 +6,7 @@ import ProductListPage from '@/features/products/components/product-list-page';
 import ProductListSkeleton from '@/features/products/components/product-list-skeleton';
 import { productSearchParamsCache } from '@/features/products/searchparams';
 import { cn } from '@/lib/utils';
+// import { serializeProductParams } from '@/features/products/searchparams';
 import { IconPlus } from '@tabler/icons-react';
 import Link from 'next/link';
 import { SearchParams } from 'nuqs/server';
@@ -25,7 +26,7 @@ export default async function Page(props: pageProps) {
   productSearchParamsCache.parse(searchParams);
 
   // This key is used for invoke suspense if any of the search params changed (used for filters).
-  // const key = serialize({ ...searchParams });
+  // const key = serializeProductParams({ ...searchParams });
 
   return (
     <PageContainer scrollable={false}>
