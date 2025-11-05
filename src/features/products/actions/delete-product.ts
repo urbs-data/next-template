@@ -6,6 +6,7 @@ import db from '@/db';
 import { productsTable } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { ValidationError } from '@/lib/errors';
 
 export const deleteProduct = authActionClient
   .metadata({ actionName: 'deleteProduct' })
@@ -21,16 +22,12 @@ export const deleteProduct = authActionClient
       );
 
     if (result.rowsAffected == 0) {
-      return {
-        success: false,
-        message: 'Product not found'
-      };
+      throw new ValidationError('Product was not deleted');
     }
 
     revalidatePath('/dashboard/product');
 
     return {
-      success: true,
       message: 'Delete product successful'
     };
   });

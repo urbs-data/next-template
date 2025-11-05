@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const isActionSuccessful = <T extends z.ZodType>(
   action?: SafeActionResult<string, T, any, any, any>
 ): action is {
-  data: T;
+  data: z.infer<T>;
   serverError: undefined;
   validationError: undefined;
 } => {
@@ -23,14 +23,14 @@ export const isActionSuccessful = <T extends z.ZodType>(
   return true;
 };
 
-export const resolveActionResult = async <T extends z.ZodType>(
-  action: Promise<SafeActionResult<string, T, any, any, any> | undefined>
-): Promise<T> => {
+export const resolveActionResult = async <T extends z.ZodType, Data>(
+  action: Promise<SafeActionResult<string, T, any, Data>>
+): Promise<Data> => {
   return new Promise((resolve, reject) => {
     action
       .then((result) => {
         if (isActionSuccessful(result)) {
-          resolve(result.data);
+          resolve(result.data as Data);
         } else {
           reject(result?.serverError ?? 'Something went wrong');
         }

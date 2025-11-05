@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `name_user_idx` ON `products_table` (`name`,`user_id`);
