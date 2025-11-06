@@ -23,6 +23,7 @@ import { useZodForm } from '@/hooks/use-zod-form';
 import { useState } from 'react';
 import Image from 'next/image';
 import { IconEdit } from '@tabler/icons-react';
+import { CATEGORIES } from '../data/constants';
 
 export default function ProductViewForm({
   initialData,
@@ -129,24 +130,7 @@ export default function ProductViewForm({
                 label='Category'
                 placeholder='Select category'
                 required
-                options={[
-                  {
-                    label: 'Beauty Products',
-                    value: 'beauty'
-                  },
-                  {
-                    label: 'Electronics',
-                    value: 'electronics'
-                  },
-                  {
-                    label: 'Home & Garden',
-                    value: 'home'
-                  },
-                  {
-                    label: 'Sports & Outdoors',
-                    value: 'sports'
-                  }
-                ]}
+                options={CATEGORIES}
               />
 
               <FormInput

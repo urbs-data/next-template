@@ -5,6 +5,8 @@ import { updateProductSchema } from './update-product-schema';
 import db from '@/db';
 import { productsTable } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { generatePhotoUrl } from '../lib/products';
+import { revalidatePath } from 'next/cache';
 
 export const updateProduct = authActionClient
   .metadata({ actionName: 'updateProduct' })
@@ -12,19 +14,9 @@ export const updateProduct = authActionClient
   .action(async ({ parsedInput }) => {
     const now = new Date().toISOString();
 
-    // Use existing photo_url if image is not provided
     let photo_url: string | undefined;
-
     if (parsedInput.image && parsedInput.image.length > 0) {
-      // Use a simple hash of the name and timestamp to generate a unique photo URL
-      const photoId =
-        Math.abs(
-          parsedInput.name.split('').reduce((hash, char) => {
-            return (hash << 5) - hash + char.charCodeAt(0);
-          }, 0)
-        ) % 20;
-
-      photo_url = `https://api.slingacademy.com/public/sample-products/${photoId}.png`;
+      photo_url = generatePhotoUrl(parsedInput.name);
     }
 
     const updateData: any = {
@@ -39,15 +31,14 @@ export const updateProduct = authActionClient
       updateData.photo_url = photo_url;
     }
 
-    const result = await db
+    await db
       .update(productsTable)
       .set(updateData)
-      .where(eq(productsTable.id, parsedInput.id))
-      .returning();
+      .where(eq(productsTable.id, parsedInput.id));
+
+    revalidatePath('/dashboard/product/[id]');
 
     return {
-      success: true,
-      message: 'Product updated successfully',
-      data: result
+      message: 'Product updated successfully'
     };
   });

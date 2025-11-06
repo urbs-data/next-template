@@ -41,8 +41,7 @@ export default function ProductNewForm() {
       return resolveActionResult(addProduct(data));
     },
     onSuccess: (data) => {
-      const count = Array.isArray(data) ? data.length : 1;
-      toast.success(`${count} product(s) added successfully`);
+      toast.success(data.message);
       router.push('/dashboard/product');
     },
     onError: (error) => {

@@ -30,8 +30,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       return resolveActionResult(deleteProduct({ id }));
     },
     onSuccess: (data) => {
-      const count = Array.isArray(data) ? data.length : 1;
-      toast.success(`${count} product(s) deleted successfully`);
+      toast.success(data.message);
       setOpen(false);
     },
     onError: (error) => {
