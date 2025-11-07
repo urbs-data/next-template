@@ -7,6 +7,7 @@ import { Product } from '../models/product';
 import { ValidationError } from '@/lib/errors';
 import { eq, like, and, or, asc, desc, SQL } from 'drizzle-orm';
 import { getAuthContext } from '@/lib/context';
+import { delay } from '@/constants/mock-api';
 
 export async function getProducts(input: GetProductsSchema): Promise<{
   products: Product[];
@@ -24,7 +25,6 @@ export async function getProducts(input: GetProductsSchema): Promise<{
   const limit = parsedInput.limit || 10;
   const offset = (page - 1) * limit;
 
-  // Build where conditions
   const conditions = [];
 
   if (parsedInput.search) {
@@ -38,13 +38,14 @@ export async function getProducts(input: GetProductsSchema): Promise<{
   }
 
   if (parsedInput.category) {
-    const categories = parsedInput.category.split('.');
+    const categories = parsedInput.category.split(',').filter(Boolean);
     if (categories.length > 0) {
-      conditions.push(eq(productsTable.category, categories[0]));
+      conditions.push(
+        or(...categories.map((cat) => eq(productsTable.category, cat.trim())))
+      );
     }
   }
 
-  // Get filtered products with pagination
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
   const orderByClause: SQL[] = [];
@@ -91,6 +92,8 @@ export async function getProducts(input: GetProductsSchema): Promise<{
     .from(productsTable)
     .where(eq(productsTable.user_id, ctx.session.user.id));
   const totalCount = allProducts.length;
+
+  await delay(1000);
 
   return {
     products: filteredProducts as Product[],

@@ -8,7 +8,6 @@ import * as XLSX from 'xlsx';
 import { generatePhotoUrl } from '../lib/products';
 import { sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { logger } from '@/lib/logger';
 
 interface ExcelRow {
   name: string;
