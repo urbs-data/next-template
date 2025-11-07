@@ -11,6 +11,8 @@ export const productSearchParams = {
   perPage: parseAsInteger.withDefault(10),
   name: parseAsString,
   category: parseAsString,
+  area: parseAsString,
+  subArea: parseAsString,
   sortBy: parseAsString,
   sortDirection: parseAsStringEnum(['asc', 'desc'])
 };
