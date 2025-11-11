@@ -3,10 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { DataTableColumnHeader } from '@/components/ui/table/data-table-column-header';
 import { Product } from '@/features/products/models/product';
 import { Column, ColumnDef } from '@tanstack/react-table';
-import { CheckCircle2, Text, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle } from 'lucide-react';
 import Image from 'next/image';
 import { CellAction } from './cell-action';
-import { CATEGORIES } from '@/features/products/data/constants';
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -31,14 +30,7 @@ export const columns: ColumnDef<Product>[] = [
     header: ({ column }: { column: Column<Product, unknown> }) => (
       <DataTableColumnHeader column={column} title='Name' />
     ),
-    cell: ({ cell }) => <div>{cell.getValue<Product['name']>()}</div>,
-    meta: {
-      label: 'Name',
-      placeholder: 'Search products...',
-      variant: 'text',
-      icon: Text
-    },
-    enableColumnFilter: true
+    cell: ({ cell }) => <div>{cell.getValue<Product['name']>()}</div>
   },
   {
     id: 'category',
@@ -56,12 +48,6 @@ export const columns: ColumnDef<Product>[] = [
           {status}
         </Badge>
       );
-    },
-    enableColumnFilter: true,
-    meta: {
-      label: 'Category',
-      variant: 'multiSelect',
-      options: CATEGORIES
     }
   },
   {
