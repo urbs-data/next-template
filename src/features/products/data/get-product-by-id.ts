@@ -6,7 +6,7 @@ import {
   getProductByIdSchema,
   GetProductByIdSchema
 } from './get-product-by-id-schema';
-import { Product } from '../models/product';
+import { Product } from '@/db/schema';
 import { ValidationError } from '@/lib/errors';
 import { eq } from 'drizzle-orm';
 import { delay } from '@/constants/mock-api';

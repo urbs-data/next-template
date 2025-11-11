@@ -3,7 +3,7 @@
 import db from '@/db';
 import { productsTable } from '@/db/schema';
 import { getProductsSchema, GetProductsSchema } from './get-products-schema';
-import { Product } from '../models/product';
+import { Product } from '@/db/schema';
 import { ValidationError } from '@/lib/errors';
 import { eq, like, and, or, asc, desc, SQL } from 'drizzle-orm';
 import { getAuthContext } from '@/lib/context';
