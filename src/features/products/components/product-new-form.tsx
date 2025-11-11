@@ -45,7 +45,7 @@ export default function ProductNewForm() {
       router.push('/dashboard/product');
     },
     onError: (error) => {
-      toast.error(`No se pudieron agregar los campos: ${error}`);
+      toast.error(error.message);
     }
   });
 

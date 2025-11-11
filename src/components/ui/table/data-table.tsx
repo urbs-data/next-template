@@ -10,6 +10,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { getCommonPinningStyles } from '@/lib/data-table';
+import { DataTableViewOptions } from './data-table-view-options';
 
 interface DataTableProps<TData> extends React.ComponentProps<'div'> {
   table: TanstackTable<TData>;
@@ -92,6 +93,7 @@ export function DataTable<TData>({
           </table>
         </div>
       </div>
+      <DataTableViewOptions table={table} />
       <div className='flex flex-col gap-2.5'>
         <DataTablePagination table={table} />
         {actionBar &&

@@ -16,9 +16,7 @@ import {
 
 export const actionClient = createSafeActionClient({
   handleServerError(e) {
-    if (process.env.NODE_ENV == 'development') {
-      return e.name + ' -- ' + e.message;
-    } else if (
+    if (
       e instanceof ValidationError ||
       e instanceof ForbiddenError ||
       e instanceof NotFoundError ||
@@ -26,6 +24,8 @@ export const actionClient = createSafeActionClient({
       e instanceof GatewayError
     ) {
       return e.message;
+    } else if (process.env.NODE_ENV == 'development') {
+      return e.name + ' -- ' + e.message;
     }
 
     return DEFAULT_SERVER_ERROR_MESSAGE;

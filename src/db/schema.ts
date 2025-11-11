@@ -15,3 +15,6 @@ export const productsTable = sqliteTable(
   },
   (table) => [unique('name_user_idx').on(table.name, table.user_id)]
 );
+
+export type Product = typeof productsTable.$inferSelect;
+export type NewProduct = typeof productsTable.$inferInsert;
