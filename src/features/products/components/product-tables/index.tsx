@@ -30,5 +30,5 @@ export function ProductTable<TData, TValue>({
     debounceMs: 500
   });
 
-  return <DataTable table={table} />;
+  return <DataTable table={table} totalItems={totalItems} />;
 }
