@@ -6,7 +6,8 @@ import db from '@/db';
 import { productsTable } from '@/db/schema';
 import { revalidatePath } from 'next/cache';
 import { createProductData } from '../lib/product-factory';
-
+import { ValidationError } from '@/lib/errors';
+import { and, eq } from 'drizzle-orm';
 export const addProduct = authActionClient
   .metadata({ actionName: 'addProduct' })
   .inputSchema(addProductSchema)
@@ -21,11 +22,21 @@ export const addProduct = authActionClient
       ctx.session.user.id
     );
 
+    const existingProduct = await db
+      .select()
+      .from(productsTable)
+      .where(
+        and(
+          eq(productsTable.name, productData.name),
+          eq(productsTable.user_id, ctx.session.user.id)
+        )
+      );
+    if (existingProduct.length > 0) {
+      throw new ValidationError('Product already exists');
+    }
+
     await db.insert(productsTable).values(productData);
 
     revalidatePath('/dashboard/product');
-
-    return {
-      message: 'Add product successful'
-    };
+    return { message: 'Add product successful' };
   });

@@ -15,7 +15,7 @@ export function createProductData(
 ): NewProduct {
   validateProduct(input);
 
-  const now = new Date().toISOString();
+  const now = new Date();
   const photoUrl = generatePhotoUrl(input.name);
 
   return {

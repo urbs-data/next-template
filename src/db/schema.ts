@@ -1,17 +1,24 @@
-import { int, sqliteTable, text, real, unique } from 'drizzle-orm/sqlite-core';
+import {
+  pgTable,
+  serial,
+  text,
+  real,
+  timestamp,
+  unique
+} from 'drizzle-orm/pg-core';
 
-export const productsTable = sqliteTable(
+export const productsTable = pgTable(
   'products_table',
   {
-    id: int().primaryKey({ autoIncrement: true }),
-    user_id: text().notNull(),
-    photo_url: text().notNull(),
-    name: text().notNull(),
-    description: text().notNull(),
-    created_at: text().notNull(),
-    price: real().notNull(),
-    category: text().notNull(),
-    updated_at: text().notNull()
+    id: serial('id').primaryKey(),
+    user_id: text('user_id').notNull(),
+    photo_url: text('photo_url').notNull(),
+    name: text('name').notNull(),
+    description: text('description').notNull(),
+    created_at: timestamp('created_at').notNull().defaultNow(),
+    price: real('price').notNull(),
+    category: text('category').notNull(),
+    updated_at: timestamp('updated_at').notNull().defaultNow()
   },
   (table) => [unique('name_user_idx').on(table.name, table.user_id)]
 );

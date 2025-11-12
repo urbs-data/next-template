@@ -12,7 +12,7 @@ export const updateProduct = authActionClient
   .metadata({ actionName: 'updateProduct' })
   .inputSchema(updateProductSchema)
   .action(async ({ parsedInput }) => {
-    const now = new Date().toISOString();
+    const now = new Date();
 
     let photo_url: string | undefined;
     if (parsedInput.image && parsedInput.image.length > 0) {
