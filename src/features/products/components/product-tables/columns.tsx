@@ -1,5 +1,6 @@
 'use client';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { DataTableColumnHeader } from '@/components/ui/table/data-table-column-header';
 import { Product } from '@/db/schema';
 import { Column, ColumnDef } from '@tanstack/react-table';
@@ -8,6 +9,34 @@ import Image from 'next/image';
 import { CellAction } from './cell-action';
 
 export const columns: ColumnDef<Product>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <div className='flex w-full justify-center'>
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label='Seleccionar todos'
+        />
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className='flex w-full justify-center'>
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label='Seleccionar fila'
+        />
+      </div>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    enableResizing: false,
+    maxSize: 40
+  },
   {
     accessorKey: 'photo_url',
     header: 'IMAGE',
@@ -18,11 +47,12 @@ export const columns: ColumnDef<Product>[] = [
             src={row.getValue('photo_url')}
             alt={row.getValue('name')}
             fill
-            className='rounded-lg'
+            className='rounded-lg object-cover'
           />
         </div>
       );
-    }
+    },
+    maxSize: 42
   },
   {
     id: 'name',
@@ -48,55 +78,21 @@ export const columns: ColumnDef<Product>[] = [
           {status}
         </Badge>
       );
-    }
+    },
+    maxSize: 42
   },
   {
     accessorKey: 'price',
-    header: 'PRICE'
+    header: 'Price',
+    maxSize: 42
   },
   {
     accessorKey: 'description',
     header: 'DESCRIPTION'
   },
-
   {
     id: 'actions',
-    cell: ({ row }) => <CellAction data={row.original} />
-  },
-  // columnas de ejemplo para que se vea el scroll horizontal
-  {
-    id: 'price2',
-    accessorKey: 'price',
-    header: 'PRICE2'
-  },
-  {
-    id: 'price3',
-    accessorKey: 'price',
-    header: 'PRICE3'
-  },
-  {
-    id: 'price4',
-    accessorKey: 'price',
-    header: 'PRICE4'
-  },
-  {
-    id: 'price5',
-    accessorKey: 'price',
-    header: 'PRICE5'
-  },
-  {
-    id: 'price6',
-    accessorKey: 'price',
-    header: 'PRICE6'
-  },
-  {
-    id: 'price7',
-    accessorKey: 'price',
-    header: 'PRICE7'
-  },
-  {
-    id: 'price8',
-    accessorKey: 'price',
-    header: 'PRICE8'
+    cell: ({ row }) => <CellAction data={row.original} />,
+    maxSize: 42
   }
 ];

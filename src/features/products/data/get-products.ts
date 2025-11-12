@@ -5,9 +5,8 @@ import { productsTable } from '@/db/schema';
 import { getProductsSchema, GetProductsSchema } from './get-products-schema';
 import { Product } from '@/db/schema';
 import { ValidationError } from '@/lib/errors';
-import { eq, like, and, or, asc, desc, SQL, count } from 'drizzle-orm';
+import { eq, like, and, or, asc, desc, SQL, count, inArray } from 'drizzle-orm';
 import { getAuthContext } from '@/lib/context';
-import { delay } from '@/constants/mock-api';
 
 export async function getProducts(input: GetProductsSchema): Promise<{
   products: Product[];
@@ -45,21 +44,26 @@ export async function getProducts(input: GetProductsSchema): Promise<{
     }
   }
 
+  if (parsedInput.ids && parsedInput.ids.length > 0) {
+    conditions.push(inArray(productsTable.id, parsedInput.ids));
+  }
+
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+  const columnMap: Record<string, any> = {
+    id: productsTable.id,
+    name: productsTable.name,
+    description: productsTable.description,
+    price: productsTable.price,
+    category: productsTable.category,
+    created_at: productsTable.created_at,
+    updated_at: productsTable.updated_at,
+    photo_url: productsTable.photo_url,
+    user_id: productsTable.user_id
+  };
 
   const orderByClause: SQL[] = [];
   if (parsedInput.sortBy) {
-    const columnMap: Record<string, any> = {
-      id: productsTable.id,
-      name: productsTable.name,
-      description: productsTable.description,
-      price: productsTable.price,
-      category: productsTable.category,
-      created_at: productsTable.created_at,
-      updated_at: productsTable.updated_at,
-      photo_url: productsTable.photo_url
-    };
-
     const column = columnMap[parsedInput.sortBy];
     if (column) {
       const isDesc = parsedInput.sortDirection === 'desc';
@@ -67,8 +71,18 @@ export async function getProducts(input: GetProductsSchema): Promise<{
     }
   }
 
-  const filteredProducts = await db
-    .select()
+  let query;
+  if (parsedInput.columns && parsedInput.columns.length > 0) {
+    const selectColumns: Record<string, any> = { id: productsTable.id };
+    parsedInput.columns.forEach((col) => {
+      if (columnMap[col]) selectColumns[col] = columnMap[col];
+    });
+    query = db.select(selectColumns);
+  } else {
+    query = db.select();
+  }
+
+  const filteredProducts = await query
     .from(productsTable)
     .where(and(whereClause, eq(productsTable.user_id, ctx.session.user.id)))
     .orderBy(
@@ -81,8 +95,6 @@ export async function getProducts(input: GetProductsSchema): Promise<{
     .select({ count: count() })
     .from(productsTable)
     .where(and(whereClause, eq(productsTable.user_id, ctx.session.user.id)));
-
-  await delay(1000);
 
   return {
     products: filteredProducts as Product[],

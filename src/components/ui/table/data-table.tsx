@@ -14,19 +14,21 @@ import { DataTableViewOptions } from './data-table-view-options';
 
 interface DataTableProps<TData> extends React.ComponentProps<'div'> {
   table: TanstackTable<TData>;
-  actionBar?: React.ReactNode;
   totalItems?: number;
+  tableActions?: React.ReactNode;
 }
 
 export function DataTable<TData>({
   table,
-  actionBar,
   totalItems,
-  children
+  tableActions
 }: DataTableProps<TData>) {
   return (
-    <div className='flex flex-1 flex-col space-y-4'>
-      {children}
+    <div className='relative flex flex-1 flex-col space-y-4'>
+      <div className='absolute -top-[3rem] right-0 z-10 flex items-center gap-2'>
+        {tableActions}
+        <DataTableViewOptions table={table} />
+      </div>
       <div className='relative flex flex-1'>
         <div className='absolute inset-0 overflow-x-auto overflow-y-auto rounded-lg border'>
           <table
@@ -95,12 +97,8 @@ export function DataTable<TData>({
           </table>
         </div>
       </div>
-      <DataTableViewOptions table={table} />
       <div className='flex flex-col gap-2.5'>
         <DataTablePagination table={table} totalItems={totalItems} />
-        {actionBar &&
-          table.getFilteredSelectedRowModel().rows.length > 0 &&
-          actionBar}
       </div>
     </div>
   );

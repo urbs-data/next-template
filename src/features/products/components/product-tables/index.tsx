@@ -1,23 +1,25 @@
 'use client';
 
 import { DataTable } from '@/components/ui/table/data-table';
+import { ProductTableActions } from './table-actions';
 
 import { useDataTable } from '@/hooks/use-data-table';
 
+import { Product } from '@/db/schema';
 import { ColumnDef } from '@tanstack/react-table';
 import { parseAsInteger, useQueryState } from 'nuqs';
 
-interface ProductTableParams<TData, TValue> {
-  data: TData[];
+interface ProductTableParams<TValue> {
+  data: Product[];
   totalItems: number;
-  columns: ColumnDef<TData, TValue>[];
+  columns: ColumnDef<Product, TValue>[];
 }
 
-export function ProductTable<TData, TValue>({
+export function ProductTable<TValue>({
   data,
   totalItems,
   columns
-}: ProductTableParams<TData, TValue>) {
+}: ProductTableParams<TValue>) {
   const [pageSize] = useQueryState('perPage', parseAsInteger.withDefault(10));
 
   const pageCount = Math.ceil(totalItems / pageSize);
@@ -30,5 +32,13 @@ export function ProductTable<TData, TValue>({
     debounceMs: 500
   });
 
-  return <DataTable table={table} totalItems={totalItems} />;
+  return (
+    <DataTable
+      table={table}
+      totalItems={totalItems}
+      tableActions={
+        <ProductTableActions table={table} totalItems={totalItems} />
+      }
+    />
+  );
 }

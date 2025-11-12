@@ -15,6 +15,7 @@ interface DataTableSkeletonProps extends React.ComponentProps<'div'> {
   filterCount?: number;
   cellWidths?: string[];
   withViewOptions?: boolean;
+  withTableActions?: boolean;
   withPagination?: boolean;
   shrinkZero?: boolean;
 }
@@ -25,6 +26,7 @@ export function DataTableSkeleton({
   filterCount = 0,
   cellWidths = ['auto'],
   withViewOptions = true,
+  withTableActions = false,
   withPagination = true,
   shrinkZero = false,
   className,
@@ -36,7 +38,16 @@ export function DataTableSkeleton({
   );
 
   return (
-    <div className={cn('flex flex-1 flex-col space-y-4', className)} {...props}>
+    <div
+      className={cn('relative flex flex-1 flex-col space-y-4', className)}
+      {...props}
+    >
+      {(withTableActions || withViewOptions) && (
+        <div className='absolute -top-[3rem] right-0 z-10 flex items-center gap-2'>
+          {withTableActions && <Skeleton className='h-8 w-24' />}
+          {withViewOptions && <Skeleton className='h-8 w-24' />}
+        </div>
+      )}
       <div className='flex-1 rounded-md border'>
         <Table>
           <TableHeader>
