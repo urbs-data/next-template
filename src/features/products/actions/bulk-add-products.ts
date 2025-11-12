@@ -5,16 +5,9 @@ import { bulkAddProductsSchema } from './bulk-add-products-schema';
 import db from '@/db';
 import { productsTable } from '@/db/schema';
 import * as XLSX from 'xlsx';
-import { generatePhotoUrl } from '../lib/products';
 import { sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-
-interface ExcelRow {
-  name: string;
-  category: string;
-  price: number;
-  description: string;
-}
+import { createManyProductData, ProductInput } from '../lib/product-factory';
 
 export const bulkAddProducts = authActionClient
   .metadata({ actionName: 'bulkAddProducts' })
@@ -31,7 +24,7 @@ export const bulkAddProducts = authActionClient
 
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const data: ExcelRow[] = XLSX.utils.sheet_to_json(worksheet);
+    const data: ProductInput[] = XLSX.utils.sheet_to_json(worksheet);
 
     const requiredColumns = ['name', 'category', 'price', 'description'];
     const firstRow = data[0];
@@ -43,20 +36,7 @@ export const bulkAddProducts = authActionClient
       );
     }
 
-    const productsToInsert = data.map((row) => {
-      const now = new Date().toISOString();
-      const photo_url = generatePhotoUrl(row.name);
-      return {
-        user_id: ctx.session.user.id,
-        name: row.name,
-        category: row.category,
-        price: row.price,
-        description: row.description,
-        photo_url: photo_url,
-        created_at: now,
-        updated_at: now
-      };
-    });
+    const productsToInsert = createManyProductData(data, ctx.session.user.id);
 
     const result = await db
       .insert(productsTable)

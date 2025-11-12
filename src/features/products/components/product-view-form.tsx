@@ -7,7 +7,7 @@ import { FormTextarea } from '@/components/forms/form-textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
-import { Product } from '../models/product';
+import { Product } from '@/db/schema';
 import { resolveActionResult } from '@/lib/actions/client';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler } from 'react-hook-form';

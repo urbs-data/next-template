@@ -3,15 +3,14 @@
 import db from '@/db';
 import { productsTable } from '@/db/schema';
 import { getProductsSchema, GetProductsSchema } from './get-products-schema';
-import { Product } from '../models/product';
+import { Product } from '@/db/schema';
 import { ValidationError } from '@/lib/errors';
-import { eq, like, and, or, asc, desc, SQL } from 'drizzle-orm';
+import { eq, like, and, or, asc, desc, SQL, count } from 'drizzle-orm';
 import { getAuthContext } from '@/lib/context';
 import { delay } from '@/constants/mock-api';
 
 export async function getProducts(input: GetProductsSchema): Promise<{
   products: Product[];
-  filteredCount: number;
   totalCount: number;
 }> {
   const result = getProductsSchema.safeParse(input);
@@ -78,26 +77,15 @@ export async function getProducts(input: GetProductsSchema): Promise<{
     .limit(limit)
     .offset(offset);
 
-  // Get total count of filtered products
-  const allFilteredProducts = await db
-    .select()
+  const [{ count: totalCount }] = await db
+    .select({ count: count() })
     .from(productsTable)
     .where(and(whereClause, eq(productsTable.user_id, ctx.session.user.id)));
-
-  const filteredCount = allFilteredProducts.length;
-
-  // Get total count of all products
-  const allProducts = await db
-    .select()
-    .from(productsTable)
-    .where(eq(productsTable.user_id, ctx.session.user.id));
-  const totalCount = allProducts.length;
 
   await delay(1000);
 
   return {
     products: filteredProducts as Product[],
-    filteredCount,
     totalCount
   };
 }

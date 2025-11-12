@@ -32,7 +32,8 @@ export const resolveActionResult = async <T extends z.ZodType, Data>(
         if (isActionSuccessful(result)) {
           resolve(result.data as Data);
         } else {
-          reject(result?.serverError ?? 'Something went wrong');
+          const errorMessage = result?.serverError ?? 'Something went wrong';
+          reject(new Error(errorMessage));
         }
       })
       .catch((error) => {

@@ -49,7 +49,7 @@ export const ProductBulkAddModal = NiceModal.create<ProductBulkAddModalProps>(
         form.reset();
       },
       onError: (error) => {
-        toast.error(`Failed to add products: ${error}`);
+        toast.error(error.message);
       }
     });
 
