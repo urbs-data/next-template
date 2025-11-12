@@ -19,9 +19,10 @@ export const deleteProduct = authActionClient
           eq(productsTable.id, parsedInput.id),
           eq(productsTable.user_id, ctx.session.user.id)
         )
-      );
+      )
+      .returning();
 
-    if (result.rowsAffected == 0) {
+    if (result.length === 0) {
       throw new ValidationError('Product was not deleted');
     }
 
