@@ -1,16 +1,17 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { HTSActions } from '@/features/parameters/HTS/components/hts-actions';
-import HTSListPage from '@/features/parameters/HTS/components/hts-list-page';
 import ProductListSkeleton from '@/features/products/components/product-list-skeleton';
 import { productSearchParamsCache } from '@/features/products/searchparams';
 import { serializeProductParams } from '@/features/products/searchparams';
 import { SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 
+import InlandParameterActions from '@/features/parameters/inland_parameter/components/inland-parameter-actions';
+import InlandParameterListPage from '@/features/parameters/inland_parameter/components/inland-parameter-list-page';
+
 export const metadata = {
-  title: 'Parameters: HTS Code'
+  title: 'Parameters: Inland Parameters'
 };
 
 type pageProps = {
@@ -27,8 +28,11 @@ export default async function Page(props: pageProps) {
     <PageContainer scrollable={false}>
       <div className='flex flex-1 flex-col space-y-4'>
         <div className='flex items-center justify-between'>
-          <Heading title='HTS Codes' description='Manage HTS Codes' />
-          <HTSActions />
+          <Heading
+            title='Inland Parameter'
+            description='Manage Inland Parameters'
+          />
+          <InlandParameterActions />
         </div>
 
         <Separator />
@@ -38,10 +42,8 @@ export default async function Page(props: pageProps) {
                     <ProductFilters />
                 </Suspense> */}
 
-        {/* TABLA HTS */}
-        {/* Quiza hacer el Skeleton generico para parameters? */}
         <Suspense key={key} fallback={<ProductListSkeleton />}>
-          <HTSListPage />
+          <InlandParameterListPage />
         </Suspense>
       </div>
     </PageContainer>

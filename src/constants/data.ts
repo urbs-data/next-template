@@ -39,7 +39,7 @@ export const navItems: NavItem[] = [
       },
       {
         title: 'Inland Parameters',
-        url: '/dashboard/parameters/inland',
+        url: '/dashboard/parameters/inland_parameter',
         icon: 'chevronLeft',
         shortcut: ['m', 'm']
       },

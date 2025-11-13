@@ -33,8 +33,24 @@ export const htsCodesTable = sqliteTable('hts_codes', {
   notes: text()
 });
 
+export const inlandParametersTable = sqliteTable('inland_parameters', {
+  id: int().primaryKey({ autoIncrement: true }),
+  inland_type: text(),
+  port: text(),
+  country: text(),
+  start_date: text(), // DATE CON POSTGRE !!!!!
+  end_date: text().default('2100-01-01T00:00:00Z'),
+  zip_code: int(),
+  value: real(),
+  cost_group: text(), // posible dropdown
+  user: text()
+});
+
 export type Product = typeof productsTable.$inferSelect;
 export type NewProduct = typeof productsTable.$inferInsert;
 
 export type HTSCode = typeof htsCodesTable.$inferSelect;
 export type NewHTSCode = typeof htsCodesTable.$inferInsert;
+
+export type InlandParameter = typeof inlandParametersTable.$inferSelect;
+export type NewInlandParameter = typeof inlandParametersTable.$inferInsert;
