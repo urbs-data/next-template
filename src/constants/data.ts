@@ -19,6 +19,88 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
+    title: 'Parameters',
+    url: '/dashboard/parameters',
+    icon: 'userPen',
+    shortcut: ['p', 'p'],
+    isActive: false,
+    items: [
+      {
+        title: 'Main',
+        url: '/dashboard/parameters',
+        icon: 'dashboard',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'HTS Codes',
+        url: '/dashboard/parameters/HTS',
+        icon: 'page',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Inland Parameters',
+        url: '/dashboard/parameters/inland',
+        icon: 'chevronLeft',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Ocean Freight',
+        url: '/dashboard/parameters/inland',
+        icon: 'chevronLeft',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Ground Freight',
+        url: '/dashboard/parameters/inland',
+        icon: 'chevronLeft',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Port Cost',
+        url: '/dashboard/parameters/inland',
+        icon: 'chevronLeft',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Tariff Parameters',
+        url: '/dashboard/parameters/inland',
+        icon: 'warning',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Vendor Ports',
+        url: '/dashboard/parameters/inland',
+        icon: 'employee',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Tariff HTS Exceptions',
+        url: '/dashboard/parameters/inland',
+        icon: 'close',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Incoterm Cost Group ',
+        url: '/dashboard/parameters/inland',
+        icon: 'close',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Other Parameters',
+        url: '/dashboard/parameters/inland',
+        icon: 'help',
+        shortcut: ['m', 'm']
+      }
+    ]
+  },
+  /* 
+  "dashboard" | "logo" | "login" | "close" | "product" | "close" | 
+  "kanban" | "chevronLeft" | "chevronRight" | "trash" | "employee" | 
+  "post" | "page" | "userPen" | "user2" | "media" | "settings" | "billing" | 
+  "ellipsis" | "add" | "warning" | "user" | "arrowRight" | "help" | "pizza" | 
+  "sun" | "moon" | "laptop" | "github" | "twitter" | "check" | undefined
+  */
+  {
     title: 'Account',
     url: '#', // Placeholder as there is no direct link for the parent
     icon: 'billing',

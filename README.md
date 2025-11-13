@@ -113,3 +113,71 @@ You should now be able to access the application at http://localhost:3000.
 > After cloning or forking the repository, be cautious when pulling or syncing with the latest changes, as this may result in breaking conflicts.
 
 Cheers! 🥂
+
+
+
+
+➡️ Guia de replicamiento de secciones
+
+1. Creamos la nueva ruta de la seccion a crear + portal entrada a la misma - en products, por ejemplo:
+- /dashboard/product/page.tsx -> Tenemos headers, opciones (como add prod) y la view de productos (<ProductListPage />).
+- Dentro de la <ProductListPage /> llamamos <ProductTable>, que a su vez llama a <DataTable table={table} totalItems={totalItems} />;
+- <DataTable table={table} totalItems={totalItems} /> es GENERICO, por lo que renderizará aquello que le pasemos
+- Tomando esto de ejemplo, hacemos lo mismo para nuestra nueva seccion
+
+
+2. Creamos la carpeta de /features de la seccion que estamos creando 
+- Replicamos las carpetas /actions, /components, /data y /components/tables (si la hay)
+
+
+3. Desde la raíz de la ruta del componente nuevo, atravesar components hasta llegar a la data-table:
+
+import { DataTable } from '@/components/ui/table/data-table';
+
+export function ProductTable<TData, TValue>({
+  data,
+  totalItems,
+  columns
+}: ProductTableParams<TData, TValue>) { ... }
+
+- Copiar la carpeta dedicada a las tablas por completo (features/products/product-tables por ejemplo) y pegar en la misma locacion de la nueva ruta a crear 
+- Y desde acá, empezar a replicar y adaptar cada funcionalidad subiendo niveles cada vez que se resuelve algo 
+
+
+4. Replicar y adaptar funcionalidades 
+- En nuestro caso, primero actualizamos el delete de las row action (/product-tables), despues GET de /data para los items, despues las funcionalidades HTTP en /actions, etc)
+
+
+5. Ademas de replicar la action, replicar el SCHEMA para CADA archivo replicado (delete, get, delete-schema, get-schema)
+- ADEMAS, tener ya declarado en /costants los tipos y schemas del nuevo tipo de dato que es la base de la ruta a crear 
+
+
+6. ACTUALIZAR EN LA RAIZ de la ruta la table nueva
+- En el punto 5 adaptamos cada funcionalidad o tipo de dato a la ruta nueva. La /table tambien debe actualizarse.
+- Por ejemplo, revisar las product-table y la hts-table y verás como cada una tiene su nombre: <ProductTable /> -> <HTSTable />
+
+
+7. Ahora, con todos los componentes, funcionalidades y tipos nuevos creados y sin errores, correr: npx drizzle-kit generate 
+-> Obtendremos una salida como:
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'C:\Users\valen\Desktop\Hemisphere\next-template\drizzle.config.ts'
+2 tables
+hts_codes 11 columns 0 indexes 0 fks
+products_table 9 columns 1 indexes 0 fks
+[✓] Your SQL migration file ➜ drizzle\0002_complex_warbird.sql 🚀
+
+8. Por ultimo, corremos: - npx drizzle-kit migrate 
+- Obteniendo: 
+No config path provided, using default 'drizzle.config.ts'
+Reading config file 'C:\Users\valen\Desktop\Hemisphere\next-template\drizzle.config.ts'
+
+9. Iniciamos la app y veremos como ya esta renderizada nuestra nueva seccion! 
+
+NO ES LO MISMO productviewpage que productviewpage
+
+
+
+
+
+

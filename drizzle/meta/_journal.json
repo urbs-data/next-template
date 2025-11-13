@@ -15,6 +15,13 @@
       "when": 1762343750751,
       "tag": "0001_orange_reavers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1762962494423,
+      "tag": "0002_complex_warbird",
+      "breakpoints": true
     }
   ]
 }
