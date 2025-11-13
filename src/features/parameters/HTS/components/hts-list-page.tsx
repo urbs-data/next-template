@@ -23,10 +23,10 @@ export default async function HTSListPage({}: HTSListPage) {
     }; */
 
   const data = await getHTSCodes(/* filters */);
-  const totalProducts = data.totalCount;
-  const products = data.htscodes;
+  const totalHTSCodes = data.totalCount;
+  const hts_codes = data.htscodes;
 
   return (
-    <HTSTable data={products} totalItems={totalProducts} columns={columns} />
+    <HTSTable data={hts_codes} totalItems={totalHTSCodes} columns={columns} />
   );
 }
