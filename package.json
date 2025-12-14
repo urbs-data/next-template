@@ -14,7 +14,8 @@
     "prepare": "husky",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:generate-custom": "drizzle-kit generate --custom"
   },
   "lint-staged": {
     "**/*.{js,jsx,tsx,ts,css,less,scss,sass}": [
@@ -78,7 +79,7 @@
     "lucide-react": "^0.476.0",
     "match-sorter": "^8.0.0",
     "motion": "^11.17.0",
-    "next": "15.3.2",
+    "next": "15.4.8",
     "next-safe-action": "^8.0.11",
     "next-themes": "^0.4.6",
     "nextjs-toploader": "^3.7.15",
